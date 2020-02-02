@@ -12,8 +12,8 @@ setup(
     scripts=['project_manager/scripts/p'],
     entry_points={
         'console_scripts': [
-            'pm=project_manager.scripts.pm:main',
             '_p=project_manager.scripts.p:main'
         ],
+
     }
 )

@@ -1,8 +1,9 @@
 from pathlib import Path
 
+import click
+
 from project_manager import CONFIG
 from project_manager.project import Project
-from project_manager.util import load_project, project_config
 
 
 def register_new_project(name, path):
@@ -15,3 +16,15 @@ def register_new_project(name, path):
 
     with config_file.open('w') as f:
         f.write(pconf)
+
+
+@click.group(name='_' )
+def project_manage():
+    pass
+
+
+@project_manage.command()
+@click.argument('name', nargs=1, required=True)
+@click.argument('path', nargs=1, required=False)
+def register(name, path):
+    register_new_project(name, path=path)

@@ -5,11 +5,13 @@ from typing import Dict, TypeVar, Type, Optional
 
 import click as click
 
-from project_manager import CONFIG
-from project_manager.manage import management
+from project_manager import CONFIG, ACTIVATE_SHELL_VAR
+from project_manager.manage import manage
 from project_manager.util import shell_task
 
 T = TypeVar('T')
+
+swap_script = shlex.quote(str((Path(__file__).parent / 'scripts/swap_prompt.sh').expanduser().resolve(strict=True)))
 
 
 class Project(click.Group):
@@ -33,12 +35,14 @@ class Project(click.Group):
 
         commands = {
             'cd': self.cd,
+            'activate': self.activate,
+            'deactivate': self.deactivate,
         }
         for name, c in commands.items():
             self.add_command(click.command(name, help=c.__doc__)(c))
 
         # register management group
-        self.add_command(management, name='_')
+        self.add_command(manage, name='_')
 
     def _register_new_cli_command(self, name: str, command: str, help=None, use_project_pwd: bool = False):
         if name in self.custom_cli_commands:
@@ -66,24 +70,35 @@ class Project(click.Group):
         comment = 'Switching to project dir ({}): "{}"'.format(self.name, self.path)
         shell_task(self._assemble_cd_command(), comment=comment)
 
+    def activate(self):
+        """Activate the current project, so that it is used for all further commands."""
+        command = 'export {}={} && . {}'.format(ACTIVATE_SHELL_VAR, shlex.quote(self.name), swap_script)
+        comment = 'Activating project "{}"\nUse "p deactivate" to deactivate.'.format(self.name)
+        shell_task(command, comment=comment)
 
-class Projects(click.MultiCommand):
+    def deactivate(self):
+        """Deactivate the current project."""
+        command = 'unset {} && . {}'.format(ACTIVATE_SHELL_VAR, swap_script)
+        shell_task(command)
+
+
+class Projects(click.Group):
     projects: Dict[str, Project]
 
-    @classmethod
-    def load_projects(cls):
-        cls.projects = dict()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # register management group
+        from project_manager.project_management import project_manage
+        self.add_command(project_manage, name='_')
+
+        self.load_projects()
+
+    def load_projects(self):
+        self.projects = dict()
         for pconf in Path(CONFIG).glob('*.json'):
             with pconf.open('r') as f:
                 config = json.load(f)
                 p = Project.from_json(config)
-                cls.projects[p.name] = p
-
-    def list_commands(self, ctx):
-        if not getattr(self, 'projects', None):
-            self.load_projects()
-
-        return list(self.projects.keys())
-
-    def get_command(self, ctx, name):
-        return self.projects[name]
+                self.projects[p.name] = p
+                self.add_command(p)

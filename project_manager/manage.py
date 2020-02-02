@@ -3,12 +3,12 @@ import click
 from project_manager.util import load_project, project_config
 
 
-@click.group()
-def management():
+@click.group(name='_')
+def manage():
     pass
 
 
-@management.command()
+@manage.command()
 @click.argument('name', nargs=1, required=True)
 @click.argument('command', nargs=1, required=True)
 @click.option('--use-project-pwd', '-pwd', is_flag=True)
