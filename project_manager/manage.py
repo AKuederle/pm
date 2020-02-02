@@ -20,10 +20,11 @@ def register_new_cli_command(pname, *args, **kwargs):
 @click.argument('name', nargs=1, required=True)
 @click.argument('command', nargs=1, required=True)
 @click.option('--use-project-pwd', '-pwd', is_flag=True)
+@click.option('--use-subshell', '-sub', is_flag=True)
 @click.pass_obj
-def new_cmd(obj, name, command, use_project_pwd):
+def new_cmd(obj, name, command, use_project_pwd, use_subshell):
     project = obj['project']
-    register_new_cli_command(project, name, command, use_project_pwd=use_project_pwd)
+    register_new_cli_command(project, name, command, use_project_pwd=use_project_pwd, use_subshell=use_subshell)
 
 
 @manage.command()

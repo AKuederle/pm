@@ -18,7 +18,7 @@ def register_new_project(name, path):
         f.write(pconf)
 
 
-@click.group(name='_' )
+@click.group(name='_')
 def project_manage():
     pass
 

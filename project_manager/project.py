@@ -44,14 +44,18 @@ class Project(click.Group):
         # register management group
         self.add_command(manage, name='_')
 
-    def _register_new_cli_command(self, name: str, command: str, help=None, use_project_pwd: bool = False):
+    def _register_new_cli_command(self, name: str, command: str, help=None, use_project_pwd: bool = False,
+                                  use_subshell: bool = False):
         if name in self.custom_cli_commands:
             raise ValueError('A command with this name already exists.')
         full_command = command
         if use_project_pwd is True:
             full_command = self._assemble_cd_command() + ' && ' + command
+        if use_subshell is True:
+            full_command = '({})'.format(full_command)
         self.add_command(click.command(name)(lambda: shell_task(full_command)))
-        self.custom_cli_commands[name] = dict(command=command, use_project_pwd=use_project_pwd)
+        self.custom_cli_commands[name] = dict(command=command, use_project_pwd=use_project_pwd,
+                                              use_subshell=use_subshell)
 
     @classmethod
     def from_json(cls: Type[T], data: Dict) -> T:
