@@ -5,9 +5,9 @@ from typing import Dict, TypeVar, Type, Optional
 
 import click as click
 
-from project_manager import CONFIG, ACTIVATE_SHELL_VAR
+from project_manager import ACTIVATE_SHELL_VAR
 from project_manager.manage import manage
-from project_manager.util import shell_task
+from project_manager.util import shell_task, load_all_projects
 
 T = TypeVar('T')
 
@@ -95,10 +95,6 @@ class Projects(click.Group):
         self.load_projects()
 
     def load_projects(self):
-        self.projects = dict()
-        for pconf in Path(CONFIG).glob('*.json'):
-            with pconf.open('r') as f:
-                config = json.load(f)
-                p = Project.from_json(config)
-                self.projects[p.name] = p
-                self.add_command(p)
+        self.projects = load_all_projects()
+        for p in self.projects.values():
+            self.add_command(p)
