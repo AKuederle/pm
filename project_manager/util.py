@@ -15,6 +15,23 @@ def shell_task(command: str, comment: Optional[str] = None) -> None:
     sys.exit(42)
 
 
+def shell_command(name: str, command: str, comment: Optional[str] = None):
+    @click.command(
+        name=name,
+        add_help_option=False,
+        context_settings=dict(
+            ignore_unknown_options=True,
+        ))
+    @click.argument('command-args', nargs=-1, type=click.UNPROCESSED)
+    def out_command(command_args):
+        command_with_args = command
+        if command_args:
+            command_with_args = '{} {}'.format(command, ' '.join(command_args))
+        shell_task(command_with_args, comment)
+
+    return out_command
+
+
 def project_config(name):
     return PROJECT_CONFIG_DIR / (name + '.json')
 

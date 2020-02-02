@@ -7,7 +7,7 @@ import click as click
 
 from project_manager import ACTIVATE_SHELL_VAR
 from project_manager.manage import manage
-from project_manager.util import shell_task, load_all_projects
+from project_manager.util import shell_task, load_all_projects, shell_command
 
 T = TypeVar('T')
 
@@ -53,7 +53,7 @@ class Project(click.Group):
             full_command = self._assemble_cd_command() + ' && ' + command
         if use_subshell is True:
             full_command = '({})'.format(full_command)
-        self.add_command(click.command(name)(lambda: shell_task(full_command)))
+        self.add_command(shell_command(name, full_command))
         self.custom_cli_commands[name] = dict(command=command, use_project_pwd=use_project_pwd,
                                               use_subshell=use_subshell)
 
