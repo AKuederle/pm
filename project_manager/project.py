@@ -45,8 +45,8 @@ class Project(click.Group):
         self.add_command(manage, name='_')
 
     def _register_new_cli_command(self, name: str, command: str, help=None, use_project_pwd: bool = False,
-                                  use_subshell: bool = False):
-        if name in self.custom_cli_commands:
+                                  use_subshell: bool = False, force: bool = False):
+        if force is not True and name in self.custom_cli_commands:
             raise ValueError('A command with this name already exists.')
         full_command = command
         if use_project_pwd is True:
