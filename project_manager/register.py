@@ -2,7 +2,7 @@ from pathlib import Path
 
 from project_manager import CONFIG
 from project_manager.project import Project
-from project_manager.util import load_project
+from project_manager.util import load_project, project_config
 
 
 def register_new_project(name, path):
@@ -19,3 +19,7 @@ def register_new_project(name, path):
 
 def register_new_cli_command(pname, name, command):
     p = load_project(pname)
+    p._register_new_cli_command(name, command)
+
+    with project_config(name).open('w') as f:
+        f.write(p.to_json())

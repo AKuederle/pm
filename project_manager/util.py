@@ -15,6 +15,10 @@ def shell_task(command: str, comment: Optional[str] = None) -> None:
     sys.exit(42)
 
 
+def project_config(name):
+    return CONFIG / (name + '.json')
+
+
 def load_project(name):
     from project_manager.project import Project
-    return Project.from_json(json.loads((CONFIG / (name + '.json')).open('r')))
+    return Project.from_json(json.load(project_config(name).open('r')))

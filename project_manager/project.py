@@ -24,20 +24,23 @@ class Project(click.Group):
 
         self.name = name
         self.path = path
-
-        if custom_cli_commands:
-            self.custom_cli_commands = custom_cli_commands
-
-        custom_cli_commands = getattr(self, 'custom_cli_commands', {})
-        custom_cli_commands_objs = {k: lambda: shell_task(v) for k, v in custom_cli_commands.items()}
-
+        self.custom_cli_commands = {}
+        custom_cli_commands = custom_cli_commands or {}
+        for k, v in custom_cli_commands.items():
+            self._register_new_cli_command(k, v)
 
         commands = {
             'cd': self.cd,
-            **custom_cli_commands_objs
         }
         for name, c in commands.items():
             self.add_command(click.command(name, help=c.__doc__)(c))
+
+    def _register_new_cli_command(self, name, command):
+        if name in self.custom_cli_commands:
+            raise ValueError('A command with this name already exists.')
+
+        self.add_command(click.command(name)(lambda: shell_task(command)))
+        self.custom_cli_commands[name] = command
 
     @classmethod
     def from_json(cls: Type[T], data: Dict) -> T:
