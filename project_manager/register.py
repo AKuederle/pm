@@ -15,11 +15,3 @@ def register_new_project(name, path):
 
     with config_file.open('w') as f:
         f.write(pconf)
-
-
-def register_new_cli_command(pname, name, command):
-    p = load_project(pname)
-    p._register_new_cli_command(name, command)
-
-    with project_config(name).open('w') as f:
-        f.write(p.to_json())
