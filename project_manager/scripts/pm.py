@@ -17,7 +17,7 @@ def pm():
 @click.argument('name', nargs=1, required=True)
 @click.argument('path', nargs=1, required=False)
 def register(name, path):
-    register_new_project(name, path=None)
+    register_new_project(name, path=path)
 
 
 def main():

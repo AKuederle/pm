@@ -9,7 +9,7 @@ setup(
     author='arne',
     author_email='',
     description='A simple commandline project manager',
-
+    scripts=['project_manager/scripts/p'],
     entry_points={
         'console_scripts': [
             'pm=project_manager.scripts.pm:main',
