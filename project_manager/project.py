@@ -57,6 +57,10 @@ class Project(click.Group):
 class Projects(click.MultiCommand):
     projects: Dict[str, Project]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = 'p'
+
     @classmethod
     def load_projects(cls):
         cls.projects = dict()

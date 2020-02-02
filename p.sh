@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 p() {
-  out="$(python "${PWD}/scripts/p.py" "$@")"
+  out="$(_p "$@")"
   exit_code=$?
 
   if [ ${exit_code} -eq 42 ]; then

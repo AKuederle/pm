@@ -20,5 +20,9 @@ def register(name, path):
     register_new_project(name, path=None)
 
 
-if __name__ == '__main__':
+def main():
     pm()
+
+
+if __name__ == '__main__':
+    main()
