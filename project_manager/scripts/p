@@ -11,7 +11,7 @@ fi
 
 
 p() {
-  out="$(_p "$@")"
+  out="$(_p.py "$@")"
   exit_code=$?
   if [ ${exit_code} -eq 42 ]; then
     eval "$out"
