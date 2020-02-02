@@ -7,7 +7,9 @@ from project_manager.project import Project
 
 
 def register_new_project(name, path):
-    p = Project(name, path=str(Path(path).expanduser().resolve()))
+    if path:
+        path = str(Path(path).expanduser().resolve())
+    p = Project(name, path=path)
     pconf = p.to_json()
 
     config_file = PROJECT_CONFIG_DIR / Path(name + '.json')
