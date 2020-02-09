@@ -21,6 +21,7 @@ class Project(click.Group):
     custom_cli_commands: Dict[str, Dict]
 
     _fields = ['name', 'path', 'custom_cli_commands']
+    _paras = ['name', 'path']
 
     def __init__(self, name: str, path: str = None, custom_cli_commands: Optional[Dict[str, Dict]] = None):
         # Set context defaults for subcommands to get current project name
@@ -43,6 +44,7 @@ class Project(click.Group):
 
         # register management group
         self.add_command(manage, name='_')
+        self.add_command(self.para(), name='para')
 
     def _register_new_cli_command(self, name: str, command: str, help=None, use_project_pwd: bool = False,
                                   use_subshell: bool = False, force: bool = False):
@@ -74,6 +76,10 @@ class Project(click.Group):
         comment = 'Switching to project dir ({}): "{}"'.format(self.name, self.path)
         shell_task(self._assemble_cd_command(), comment=comment)
 
+    def para(self):
+        """Print out info about the project."""
+        return ProjectParas(self)
+
     def activate(self):
         """Activate the current project, so that it is used for all further commands."""
         command = 'export {}={} && . {}'.format(ACTIVATE_SHELL_VAR, shlex.quote(self.name), swap_script)
@@ -84,6 +90,13 @@ class Project(click.Group):
         """Deactivate the current project."""
         command = 'unset {} && . {}'.format(ACTIVATE_SHELL_VAR, swap_script)
         shell_task(command)
+
+
+class ProjectParas(click.Group):
+    def __init__(self, project: Project, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for p in project._paras:
+            self.add_command(click.command(name=p)(lambda p=p: click.echo(getattr(project, p, None))))
 
 
 class Projects(click.Group):
